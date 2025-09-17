@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+
+    <!-- Login Start -->
+    <section id="login">
+        <div class="container my-3">
+                <img src="{% static 'imgs/logoo.png' %}" alt="" width="20%">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-floating">
+                        <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
+                        <label for="floatingInput">Email address</label>
+                    </div>
+                    <div class="form-floating">
+                        <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
+                        <label for="floatingPassword">Password</label>
+                    </div>
+                    <input class="check" type="checkbox">Remember me
+                    <a href="#">Forget Password ?</a><br>
+                    <div class="reg-group">
+                        <button type="submit" style="background-color: darkred;">Login</button>
+                        <button type="button" onclick="signup()" style="background-color: rgb(51, 58, 65);">Create account</button>
+                    </div>
+                </form>
+                <script>
+                    function signup() {
+                        window.location.href = "{% url 'signup' %}";
+                    }
+                </script>
+        </div>
+    </section>
+    <!-- Login End -->
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Botstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/swiper.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/wow.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
+{% endblock %}
