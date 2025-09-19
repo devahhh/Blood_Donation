@@ -21,7 +21,7 @@ def index(request):
     return render(request, 'index.html')
 
 # Dashboard page (login required)
-
+@login_required
 def dashboard(request):
     return render(request, 'dashboard.html')
 
