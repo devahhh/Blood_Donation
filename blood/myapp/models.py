@@ -1,15 +1,17 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Donor(models.Model):
-    email = models.EmailField()
-    password = models.CharField(max_length=100)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     dob = models.DateField()
     blood_type = models.CharField(max_length=3)
     phone = models.CharField(max_length=15)
 
     def __str__(self):
-        return self.email
+        return self.user.email
+
+
 class Hospital(models.Model):
     name = models.CharField(max_length=100)
     address = models.TextField()
@@ -18,6 +20,8 @@ class Hospital(models.Model):
 
     def __str__(self):
         return self.name
+
+
 class BloodRequest(models.Model):
     donor = models.ForeignKey(Donor, on_delete=models.CASCADE)
     hospital = models.ForeignKey(Hospital, on_delete=models.CASCADE)
@@ -26,4 +30,4 @@ class BloodRequest(models.Model):
     quantity = models.IntegerField()
 
     def __str__(self):
-        return f"Request by {self.donor.email} for {self.blood_type} at {self.hospital.name}"
+        return f"Request by {self.donor.user.email} for {self.blood_type} at {self.hospital.name}"
