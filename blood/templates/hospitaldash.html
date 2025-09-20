@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+<body>
+    <br>
+    <h2 style="text-align: center;">Welcome, {{ hospital.name }}</h2>
+    <h4 style="text-align: center;">Here are the blood requests from your hospital</h4>
+    <br>
+    <div class="container">
+        {% if requests %}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">Patient Name</th>
+                        <th scope="col">Blood Type</th>
+                        <th scope="col">Units Needed</th>
+                        <th scope="col">Request Date</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request in requests %}
+                    <tr>
+                        <td>{{ request.patient_name }}</td>
+                        <td>{{ request.blood_type }}</td>
+                        <td>{{ request.quantity }}</td>
+                        <td>{{ request.request_date }}</td>
+                        <td>
+                            {% if request.donor %}
+                                Fulfilled by {{ request.donor.name }}
+                            {% else %}
+                                Pending
+                            {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p style="text-align: center;">No blood requests found for your hospital.</p>
+        {% endif %}
+    </div>
+    <div class="container mt-5">
+        <h4>Request Blood</h4>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="patient_name" class="form-label">Patient Name</label>
+                <input type="text" class="form-control" id="patient_name" name="patient_name" required>
+            </div>
+            <div class="mb-3">
+                <label for="blood_type" class="form-label">Blood Type</label>
+                <select class="form-select" id="blood_type" name="blood_type" required>
+                    <option value="" disabled selected>Select Blood Type</option>
+                    {% for blood_type in blood_types %}
+                        <option value="{{ blood_type }}">{{ blood_type }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="units_needed" class="form-label">Units Needed</label>
+                <input type="number" class="form-control" id="units_needed" name="units_needed" min="1" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Request</button>
+        </form><br>
+    </div>
+    
+    
+{% endblock %}

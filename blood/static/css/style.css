@@ -88,8 +88,7 @@ body {
 }
 
 #Nav2 .login:hover {
-  color: red;
-  transition: color 0.5s;
+  color: rgb(214, 183, 183)(219, 186, 186);
 }
 
 /* Nav 2 End */
@@ -591,7 +590,11 @@ body {
   border: none;
   transition: ease-out 0.5s;
 }
-#login .container form button:hover{
+button{
+  transition: ease-out 0.5s;
+}
+button:hover{
+  transition: ease-out 0.5s;
   transform: scale(1.05);
 
 }

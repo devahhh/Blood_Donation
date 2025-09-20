@@ -5,7 +5,9 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .models import *  # assuming models are in same app
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import make_password, check_password
+from django.core.mail import send_mail
+from django.conf import settings
 
 # View for About Us page
 def about_us(request):
@@ -25,6 +27,42 @@ def index(request):
 @login_required
 def dashboard(request):
     return render(request, 'dashboard.html')
+
+
+def hospital_dashboard(request):
+    hospital_id = request.session.get('hospital_id')
+    if not hospital_id:
+        return redirect('login')
+    if request.method == 'POST':
+        patient_name = request.POST.get('patient_name')
+        blood_type = request.POST.get('blood_type')
+        quantity = request.POST.get('units_needed')
+        hospital = Hospital.objects.get(id=hospital_id)
+        BloodRequest.objects.create(
+            hospital=hospital,
+            patient_name=patient_name,
+            blood_type=blood_type,
+            quantity=quantity
+        )
+        messages.success(request, "Blood request created successfully!")
+        donors=Donor.objects.filter(blood_type=blood_type)
+        for donor in donors:
+            send_mail(
+                'Blood Donation Request',
+                f'Dear {donor.user.first_name},\n\nA hospital has requested {quantity} units of blood type {blood_type} for patient {patient_name}. If you are willing to donate, please contact the hospital at {hospital.phone} or {hospital.email}.\n\nThank you for your support!\n\nBest regards,\nBlood Donation Team',
+                settings.EMAIL_HOST_USER,
+                [donor.user.email],
+                fail_silently=False,
+            )
+            if donor.requests == "":
+                donor.requests = f"{hospital.name} ({patient_name})"
+            else:
+                donor.requests += f", {hospital.name} ({patient_name})"
+            
+        return redirect('hospital_dashboard')
+    hospital = Hospital.objects.get(id=hospital_id)
+    requests = BloodRequest.objects.filter(hospital=hospital).order_by('-request_date')
+    return render(request, 'hospitaldash.html', {'requests': requests, 'hospital': hospital, 'blood_types': blood_types()})
 
 
 
@@ -67,7 +105,27 @@ def signup(request):
    
     return render(request, 'signup.html', {'emails': emails(), 'phones': phone_numbers(), 'blood_types': blood_types()})
 
+def signup_hospital(request):
+    if request.method == 'POST':
+        name=request.POST.get('name')
+        email = request.POST.get('email').lower()
+        password = request.POST.get('password')
+        address = request.POST.get('address')
+        phone = request.POST.get('phone')
 
+        Hospital.objects.create(
+            name=name,
+            email=email,
+            password=make_password(password),
+            address=address,
+            phone=phone,
+        )
+        
+
+        messages.success(request, "Hospital account created successfully! Please log in.")
+        return redirect('login')
+   
+    return render(request, 'signuphos.html', {'emails': emails(), 'phones': phone_numbers()})
 # ---------------------------
 # LOGIN VIEW
 # ---------------------------
@@ -81,7 +139,14 @@ def login_user(request):
             login(request, user)
             return redirect('dashboard')
         else:
-            messages.error(request, 'Invalid email or password')
+            hospital = Hospital.objects.get(email=email)
+            if hospital and check_password(password, hospital.password):
+                print("Hospital logged in")
+                request.session['hospital_id'] = hospital.id
+                return redirect('hospital_dashboard')
+            
+            else:
+                messages.warning(request,"Invalid email or password")
 
     return render(request, 'login.html')
 
