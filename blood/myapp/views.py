@@ -18,7 +18,8 @@ def article_detail(request):
 
 # Homepage
 def index(request):
-    return render(request, 'index.html')
+    donors = BloodRequest.objects.all().order_by('-request_date')
+    return render(request, 'index.html',{'donors': donors})
 
 # Dashboard page (login required)
 @login_required
@@ -33,6 +34,7 @@ def dashboard(request):
 # ---------------------------
 def signup(request):
     if request.method == 'POST':
+        name=request.POST.get('name')
         email = request.POST.get('email').lower()
         password = request.POST.get('password')
         dob = request.POST.get('dob')
@@ -46,6 +48,7 @@ def signup(request):
 
         # Create User
         user = User.objects.create_user(
+            first_name=name,
             username=email,
             email=email,
             password=password
@@ -62,7 +65,7 @@ def signup(request):
         messages.success(request, "Account created successfully! Please log in.")
         return redirect('login')
    
-    return render(request, 'signup.html', {'emails': emails(), 'phones': phone_numbers()})
+    return render(request, 'signup.html', {'emails': emails(), 'phones': phone_numbers(), 'blood_types': blood_types()})
 
 
 # ---------------------------
@@ -92,6 +95,9 @@ def phone_numbers():
     donors=Donor.objects.all()
     phone_list = [hospital.phone for hospital in hospitals] + [donor.phone for donor in donors]
     return phone_list
+def blood_types():
+    blood_types = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
+    return blood_types
 # ---------------------------
 # LOGOUT VIEW
 # ---------------------------

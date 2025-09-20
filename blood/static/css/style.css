@@ -569,7 +569,7 @@ body {
 #login .container {
   border: 1px solid lightgray;
   border-radius: 5px;
-  width: 77%;
+  width: 70%;
   padding-top: 30px;
   padding-bottom: 30px;
   margin-bottom: 50px;
@@ -579,16 +579,6 @@ body {
 #login .container form .form-floating {
   width: 60vw;
   margin:10px auto;
-}
-
-#login .container form .check{
-  margin: 40px 0px 0px 160px;
-  width: 2%;
-}
-
-#login .container form a{
-  margin-left: 40%;
-  font-size: 18px;
 }
 
 #login .container form button{
@@ -604,6 +594,10 @@ body {
 #login .container form button:hover{
   transform: scale(1.05);
 
+}
+#login .container form .reg-group{
+  text-align: center;
+  margin-top: 10px;
 }
 
 /*****************************************************************/
