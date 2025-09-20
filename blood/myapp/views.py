@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .models import Donor  # assuming models are in same app
+from .models import *  # assuming models are in same app
 from django.contrib.auth.hashers import make_password
 
 # View for About Us page
@@ -33,7 +33,7 @@ def dashboard(request):
 # ---------------------------
 def signup(request):
     if request.method == 'POST':
-        email = request.POST.get('email')
+        email = request.POST.get('email').lower()
         password = request.POST.get('password')
         dob = request.POST.get('dob')
         blood_type = request.POST.get('type')
@@ -61,8 +61,8 @@ def signup(request):
 
         messages.success(request, "Account created successfully! Please log in.")
         return redirect('login')
-
-    return render(request, 'signup.html')
+   
+    return render(request, 'signup.html', {'emails': emails(), 'phones': phone_numbers()})
 
 
 # ---------------------------
@@ -70,7 +70,7 @@ def signup(request):
 # ---------------------------
 def login_user(request):
     if request.method == 'POST':
-        email = request.POST.get('email')
+        email = request.POST.get('email').lower()
         password = request.POST.get('password')
 
         user = authenticate(request, username=email, password=password)
@@ -82,10 +82,20 @@ def login_user(request):
 
     return render(request, 'login.html')
 
-
+def emails():
+    hospitals = Hospital.objects.all()
+    donors=User.objects.all()
+    email_list = [hospital.email for hospital in hospitals] + [donor.email for donor in donors]
+    return email_list
+def phone_numbers():
+    hospitals = Hospital.objects.all()
+    donors=Donor.objects.all()
+    phone_list = [hospital.phone for hospital in hospitals] + [donor.phone for donor in donors]
+    return phone_list
 # ---------------------------
 # LOGOUT VIEW
 # ---------------------------
 def logout_user(request):
     logout(request)
     return redirect('login')
+

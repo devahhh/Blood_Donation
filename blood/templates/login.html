@@ -21,16 +21,14 @@
                        placeholder="Password" required>
                 <label for="floatingPassword">Password</label>
             </div>
-
-            <div class="mb-3">
-                <input class="check" type="checkbox"> Remember me
-                <a href="#">Forget Password ?</a>
-            </div>
+                <a href="#" class="">Forget Password ?</a>
+            
 
             <div class="reg-group">
                 <button type="submit" class="btn btn-danger">Login</button>
-                <a href="{% url 'signup' %}" class="btn btn-secondary">Create account</a>
+                <button type="button" onclick="location.href='{% url 'signup' %}'" class="btn btn-secondary">Create account</a>
             </div>
+            <a href="">Sign up as a Hospital?</a>
         </form>
     </div>
 </section>
